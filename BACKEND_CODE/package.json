@@ -1,0 +1,16 @@
+{
+  "name": "backed-setup",
+  "version": "1.0.0",
+  "description": "\"backend Project Setup\"",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "author": "swarup bhise",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
