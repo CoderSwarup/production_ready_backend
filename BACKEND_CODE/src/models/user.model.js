@@ -1,9 +1,9 @@
-import mongoose from 'mongoose'
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 const UserSchema = new mongoose.Schema(
   {
@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema(
     },
     watchHistory: [
       {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Video',
       },
     ],
@@ -53,23 +53,23 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
     versionKey: false,
   },
-)
+);
 
 //Hash Password MiddleWare
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
-    this.password = bcrypt.hash(this.password, 10)
-    next()
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
   } else {
-    return next()
+    return next();
   }
-})
+});
 
 // Campare Password Method
 
 UserSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password)
-}
+  return await bcrypt.compare(password, this.password);
+};
 
 //Generate Access Token
 
@@ -83,10 +83,10 @@ UserSchema.methods.generateAccessToken = async function () {
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     },
-  )
+  );
 
-  return AccessToken
-}
+  return AccessToken;
+};
 
 //Generate Refresh Token
 UserSchema.methods.generateRefreshToken = async function () {
@@ -98,8 +98,10 @@ UserSchema.methods.generateRefreshToken = async function () {
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     },
-  )
+  );
 
-  return RefreshToken
-}
-export default UserModel = mongoose.model('User', UserSchema)
+  return RefreshToken;
+};
+
+const UserModel = mongoose.model('User', UserSchema);
+export default UserModel;
