@@ -1,10 +1,17 @@
 const asyncHandler = (requestHandler) => {
   return (req, res, next) => {
-    Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
-  }
-}
+    Promise.resolve(requestHandler(req, res, next)).catch((err) => {
+      // console.log(err);
+      // return next(err);
+      return res.status(400).send({
+        error: err.message,
+        success: false,
+      });
+    });
+  };
+};
 
-export { asyncHandler }
+export { asyncHandler };
 
 // const asyncHandler = () => {}
 // const asyncHandler = (func) => () => {}

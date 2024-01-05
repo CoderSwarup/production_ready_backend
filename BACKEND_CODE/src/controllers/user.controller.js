@@ -1,3 +1,4 @@
+import UserModel from '../models/user.model.js';
 import userModel from '../models/user.model.js';
 import { ApiError } from '../utils/ApiErrors.js';
 import { ApiResponse } from '../utils/ApiResoponse.js';
@@ -7,9 +8,15 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 const RegisterUserController = asyncHandler(async (req, res) => {
   const { username, email, fullName, password } = req.body;
 
+  if (!username || !email || !fullName || !password) {
+    throw new ApiError(422, 'All fields are required');
+  }
   if (
-    [username, email, fullName, password].some((field) => field?.trim() === '')
+    [username, email, fullName, password].some(
+      (field) => typeof field === 'string' && field.trim() === '',
+    )
   ) {
+    console.log('hellow');
     throw new ApiError(422, "Fields can't be empty");
   }
 
@@ -22,33 +29,36 @@ const RegisterUserController = asyncHandler(async (req, res) => {
   }
 
   // Multer Middleware Send Fields
-
-  const AvatarLocalPath = req.files?.avatar[0]?.path;
-  const CoverImageLocalPath = req.files?.coverImage[0]?.path;
+  const AvatarLocalPath = req?.files?.avatar[0]?.path;
+  let CoverImageLocalPath = req?.files?.coverimage;
 
   if (!AvatarLocalPath) {
     throw new ApiError(400, 'Avatar is Required!');
   }
-
-  // Upload files On cloudinary
-
+  // // Upload files On cloudinary
   const avatarUrl = await uploadFileOnCloudinary(AvatarLocalPath);
-  const coverImageUrl = await uploadFileOnCloudinary(CoverImageLocalPath);
 
+  // console.log(avatarUrl);
   if (!avatarUrl) {
     throw new ApiError(400, 'Avatar is Required!');
+  }
+
+  let coverImageUrl;
+  if (CoverImageLocalPath) {
+    CoverImageLocalPath = req?.files?.coverimage[0]?.path;
+    coverImageUrl = await uploadFileOnCloudinary(CoverImageLocalPath);
   }
 
   const NewUser = await userModel.create({
     fullName,
     avatar: avatarUrl.url,
-    coverImage: coverImageUrl?.url || '',
+    coverImage: coverImageUrl?.url || null,
     email,
     password,
     username: username.toLowerCase(),
   });
 
-  const createdUser = await NewUser.findById(NewUser._id).select(
+  const createdUser = await UserModel.findById(NewUser._id).select(
     '-refreshToken -password',
   );
 
@@ -56,7 +66,6 @@ const RegisterUserController = asyncHandler(async (req, res) => {
     throw new ApiError(500, 'SomeThing Went Wrong While register User');
   }
 
-  console.log(req.files);
   return res
     .status(200)
     .json(new ApiResponse(200, createdUser, 'User Register Successfully'));
