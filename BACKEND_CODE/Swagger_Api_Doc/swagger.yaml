@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: VideoTube - The Production Ready Application
+  description: >-
+    # VideoTube API Documentation
+
+    Welcome to the API documentation for VideoTube, a production-ready application developed by CoderSwarup. This API serves as a key component in your journey to mastering backend development by guiding you through the creation of a YouTube-like video-sharing platform. Explore the rich features and gain hands-on experience in building a robust and scalable backend system.
+
+    ## Features
+
+    - **Production Ready:** VideoTube is meticulously designed to be production-ready, ensuring reliability, scalability, and efficiency in handling user registrations. Through this API, you'll learn best practices in building a resilient backend infrastructure.
+
+    ## 🎓 Learning Backend Development with VideoTube
+
+    Embark on a comprehensive learning experience in backend development as you delve into the creation of a YouTube application clone. The API documentation provides insights into the following key areas:
+
+    - **GitHub Repository:** Access the complete source code and project setup instructions on [GitHub](https://github.com/CoderSwarup). Follow the provided installation instructions to set up VideoTube on your local environment.
+
+    - **Special Thanks:** A special thanks to the creator of the main repository used for learning, [Hitesh Choudhary](https://github.com/hiteshchoudhary/chai-backend). The VideoTube project builds upon the foundation laid by the Chai Backend repository, contributing to an enriching learning experience.
+
+    - **Reporting Issues:** Experience real-world scenarios by testing the API. If you encounter any issues or bugs, contribute to the development process by creating an [issue](https://github.com/CoderSwarup/issues/new) on the GitHub repository. Assign it to a team member for collaborative problem-solving.
+
+    ## 🏁 Installation
+
+    To initiate your journey, follow the [installation instructions](https://github.com/CoderSwarup) provided on the GitHub repository. This step-by-step guide ensures a seamless setup of VideoTube on your local environment.
+
+    ## 🐞 Reporting Issues
+
+    As you progress in your learning journey, encountering challenges is natural. Report any issues or bugs you find during API testing by creating an [issue](https://github.com/CoderSwarup/issues/new). This collaborative approach fosters a vibrant learning environment and contributes to the continuous improvement of VideoTube.
+
+    ## Contact
+
+    For further inquiries or discussions about your learning journey, please reach out to the development team through the provided contact information.
+
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: 'http://localhost:3000/api/v1'
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      description: Register a new user with username, email, fullName, password, avatar, and cover image.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                fullName:
+                  type: string
+                password:
+                  type: string
+                avatar:
+                  type: string
+                  format: binary
+                coverimage:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: All fields are required
+        '422':
+          description: Unprocessable Entity, check the request payload
+          content:
+            application/json:
+              example:
+                error: Fields can't be empty
+        '409':
+          description: Conflict, email or username already in use
+          content:
+            application/json:
+              example:
+                error: Email or Username already in use

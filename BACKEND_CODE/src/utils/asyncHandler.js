@@ -3,9 +3,9 @@ const asyncHandler = (requestHandler) => {
     Promise.resolve(requestHandler(req, res, next)).catch((err) => {
       // console.log(err);
       // return next(err);
-      return res.status(400).send({
+      return res.status(err.statusCode).send({
         error: err.message,
-        success: false,
+        success: err.success,
       });
     });
   };
