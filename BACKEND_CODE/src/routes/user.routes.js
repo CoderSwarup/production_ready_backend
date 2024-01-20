@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  GenerateNewRefreshTokenController,
   LoginUserController,
   LogoutUserController,
   RegisterUserController,
@@ -13,7 +14,9 @@ UserRouter.route('/register').post(multiUpload, RegisterUserController);
 //Login Route
 UserRouter.route('/login').post(LoginUserController);
 
-//+++++++++++ Secure Routes ++++++
+// Refreshed Token
+UserRouter.route('/refresh-token').post(GenerateNewRefreshTokenController);
 
+//+++++++++++ Secure Routes ++++++
 UserRouter.route('/logout').post(verifyJWT, LogoutUserController);
 export default UserRouter;

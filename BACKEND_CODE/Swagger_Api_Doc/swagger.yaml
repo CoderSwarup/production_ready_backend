@@ -89,3 +89,163 @@ paths:
             application/json:
               example:
                 error: Email or Username already in use
+
+  # Login Route
+  /users/login:
+    post:
+      summary: Log in a user
+      description: Log in a user with email, username, and password.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Username or Email is Required
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              example:
+                error: Invalid Credentials
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Is Not Register
+      security: []
+
+  # Logout User Route
+  /users/logout:
+    post:
+      summary: Logout a user
+      description: Clear user tokens and log them out.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+      requestBody:
+        required: false
+      operationId: logoutUser
+
+  # Refresh Token Route
+  /users/refresh-token:
+    post:
+      summary: Refresh user access token
+      description: Refresh user access token using a valid refresh token.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponse'
+        '401':
+          description: Unauthorized, invalid or expired refresh token
+          content:
+            application/json:
+              example:
+                error: Invalid or expired refresh token
+
+# Components
+components:
+  schemas:
+    #Main Models
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        avatar:
+          type: string
+        coverImage:
+          type: string
+        watchHistory:
+          type: array
+          items:
+            type: string # Assuming Video IDs are string
+        password:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - username
+        - email
+        - fullName
+        - avatar
+        - password
+
+    # Response Schema
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        AccessToken:
+          type: string
+        RefreshToken:
+          type: string
+
+    LogoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User Logout Successfully
+      required:
+        - message
+
+    TokenRefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - accessToken
+        - refreshToken

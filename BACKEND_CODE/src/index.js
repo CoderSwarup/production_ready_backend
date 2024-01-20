@@ -1,23 +1,23 @@
 // import express from 'express'
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 // import dotenv from 'dotenv'
 
-import connectDB from './db/DBConnection.js'
-import app from './app.js'
+import connectDB from './db/DBConnection.js';
+import app from './app.js';
 
 // dotenv.config()
 // const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`)
-    })
+      console.log(`Server is running on port ${PORT}`);
+    });
   })
   .catch((err) => {
-    console.log('MogoDB Error :', err)
-  })
+    console.log('MogoDB Error :', err);
+  });
 
 // import { DATABSE_NAME } from './constants.js'
 //DB CONNECTION

@@ -1,10 +1,12 @@
 import UserModel from '../models/user.model.js';
-import userModel from '../models/user.model.js';
 import { generateAccessAndRefreshToken } from '../utils/AccessAndRefreshTokenGenerator.js';
 import { ApiError } from '../utils/ApiErrors.js';
 import { ApiResponse } from '../utils/ApiResoponse.js';
 import { uploadFileOnCloudinary } from '../utils/CloudinaryServices.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import JWT from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const RegisterUserController = asyncHandler(async (req, res) => {
   const { username, email, fullName, password } = req.body;
@@ -21,7 +23,7 @@ export const RegisterUserController = asyncHandler(async (req, res) => {
     throw new ApiError(422, "Fields can't be empty");
   }
 
-  const userExists = await userModel.findOne({
+  const userExists = await UserModel.findOne({
     $or: [{ email }, { username: username.toLowerCase() }],
   });
 
@@ -50,7 +52,7 @@ export const RegisterUserController = asyncHandler(async (req, res) => {
     coverImageUrl = await uploadFileOnCloudinary(CoverImageLocalPath);
   }
 
-  const NewUser = await userModel.create({
+  const NewUser = await UserModel.create({
     fullName,
     avatar: avatarUrl.url,
     coverImage: coverImageUrl?.url || null,
@@ -76,7 +78,7 @@ export const RegisterUserController = asyncHandler(async (req, res) => {
 export const LoginUserController = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!email || !username) {
+  if (!(email || username)) {
     throw new ApiError(400, 'Username or Email is Required');
   }
 
@@ -85,7 +87,7 @@ export const LoginUserController = asyncHandler(async (req, res) => {
   }
 
   const user = await UserModel.findOne({
-    $or: [{ email }, { username: username.toLowerCase() }],
+    $or: [{ email }, { username: username?.toLowerCase() }],
   });
 
   if (!user) {
@@ -99,7 +101,9 @@ export const LoginUserController = asyncHandler(async (req, res) => {
   }
 
   // Generate Access Token And Refresh Token
-  const { AccessToken, RefreshToken } = generateAccessAndRefreshToken(user._id);
+  const { AccessToken, RefreshToken } = await generateAccessAndRefreshToken(
+    user._id,
+  );
 
   // USelect the Not Requires Data To send The User
   const LoggedInUserData = await UserModel.findById(user._id).select(
@@ -158,3 +162,52 @@ export const LogoutUserController = asyncHandler(async (req, res) => {
     .clearCookie('refreshToken', cookieOptions)
     .json(new ApiResponse(200, {}, 'User LoggedOut Successfully'));
 });
+
+//Generate Refresh Token Controller
+export const GenerateNewRefreshTokenController = asyncHandler(
+  async (req, res) => {
+    const IncomingRefreshToken =
+      req.cookies.refreshToken || req.body.refrshToken;
+    if (!IncomingRefreshToken) {
+      throw new ApiError(401, 'Unathorized Request');
+    }
+
+    const DecodedToken = JWT.verify(
+      IncomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    );
+
+    const User = await UserModel.findById(DecodedToken?._id);
+    if (!User) {
+      throw new ApiError(401, 'Invalid Refresh Token');
+    }
+    console.log(IncomingRefreshToken === User.refreshToken);
+    if (IncomingRefreshToken !== User.refreshToken) {
+      throw new ApiError(401, 'Refresh Token Is Expired Or Already Used');
+    }
+
+    const option = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    const { AccessToken, RefreshToken } = await generateAccessAndRefreshToken(
+      User._id,
+    );
+
+    return res
+      .status(200)
+      .cookie('accessToken', AccessToken, option)
+      .cookie('refreshToken', RefreshToken, option)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            accessToken: AccessToken,
+            refreshToken: RefreshToken,
+          },
+          'Token Is Refreshed',
+        ),
+      );
+  },
+);

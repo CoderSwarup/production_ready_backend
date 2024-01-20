@@ -25,6 +25,9 @@ app.use(
     origin: process.env.CORS_ORIGIN,
   }),
 );
+// cookie parser is user to get cookie and set cookie
+app.use(cookieParser());
+
 // Accept json
 app.use(
   express.json({
@@ -36,8 +39,6 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 //Static
 app.use(express.static('Public'));
-// cookie parser is user to get cookie and set cookie
-app.use(cookieParser());
 
 // Routes
 

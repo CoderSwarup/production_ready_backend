@@ -5,8 +5,9 @@ const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await UserModel.findById(userId);
 
-    const AccessToken = user.generateAccessToken();
-    const RefreshToken = user.generateRefreshToken();
+    const AccessToken = await user.generateAccessToken();
+    const RefreshToken = await user.generateRefreshToken();
+    // console.log(AccessToken, RefreshToken);
 
     // Save the Refresh Token In Database
     user.refreshToken = RefreshToken;

@@ -3,6 +3,12 @@ const asyncHandler = (requestHandler) => {
     Promise.resolve(requestHandler(req, res, next)).catch((err) => {
       // console.log(err);
       // return next(err);
+      if (!err.statusCode) {
+        return res.status(500).send({
+          error: 'SomeThing Is Wrong',
+          success: false,
+        });
+      }
       return res.status(err.statusCode).send({
         error: err.message,
         success: err.success,
