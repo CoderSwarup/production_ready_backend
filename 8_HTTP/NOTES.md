@@ -211,6 +211,8 @@ MIME type defines the media type and format of the data being sent. It consists 
 
 You can find me on GitHub, where I share my coding projects, collaborate with others, and explore open-source contributions:
 
+- Linkedin: [![Linkedin](https://img.shields.io/badge/LinkedIn-Swarup%20Bhise-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/swarup-bhise-a981932aa/)
+
 [![GitHub](https://img.shields.io/badge/GitHub-CoderSwarup-blue?style=flat&logo=github)](https://github.com/CoderSwarup)
 
 For a more personal touch, you can follow me on Instagram:
