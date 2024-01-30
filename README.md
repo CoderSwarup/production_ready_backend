@@ -1,14 +1,24 @@
 # 🚀 Production-Level Backend Development with JavaScript
 
-Welcome to my journey of becoming a production-level backend developer using JavaScript! I'm Swarup Bhise, a passionate web developer always eager to learn new skills and explore cutting-edge technologies.
+Welcome to the journey of becoming a production-level backend developer using JavaScript! I'm Swarup Bhise, a passionate web developer always eager to learn new skills and explore cutting-edge technologies.
 
-## 📖 About This Repository
+# 💫 Special Thank's
 
-This repository is dedicated to documenting my progress and learning adventures in the world of backend development with JavaScript. I'll be diving deep into server-side scripting, building robust APIs, working with databases, and more.
+A special thanks to [Hitesh Choudhary](https://www.youtube.com/@chaiaurcode) for the excellent tutorials on backend development using JavaScript. You can find the tutorial series [here](https://www.youtube.com/playlist?list=PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW) and the GitHub repo [here](https://github.com/hiteshchoudhary/chai-backend).
 
-## 📝 Table of Contents
+## 📖 Summary of this project
 
-1.  [Backend RoadMap](1_Backend_Roadmap)
+This project is a complex backend project that is built with nodejs, expressjs, mongodb, mongoose, jwt, bcrypt, and many more. This project is a complete backend project that has all the features that a backend project should have. We are building a complete video hosting website similar to youtube with all the features like login, signup, upload video, like, dislike, comment, reply, subscribe, unsubscribe, and many more.
+
+Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tokens and many more. We have spent a lot of time in building this project and we are sure that you will learn a lot from this project.
+
+## 📝 Learning Steps
+
+1. [1_Backend_Roadmap](1_Backend_Roadmap)
+2. [2_Frotend_Backend_Connection](2_Frotend_Backend_Connection)
+3. [3_Data_Modelling](3_Data_Modelling)
+4. [4_Professional_Project_SetUp](4_Professional_Project_SetUp)
+5. [5_Connect_Databse](5_Connect_Databse)
 
 ### 📚 Learning Goals
 
@@ -50,11 +60,11 @@ I believe that backend development is the backbone of any web application. It's 
 
 You can find me on GitHub, where I share my coding projects, collaborate with others, and explore open-source contributions:
 
-[![GitHub](https://img.shields.io/badge/GitHub-CoderSwarup-blue?style=flat&logo=github)](https://github.com/CoderSwarup)
+- Linkedin: [![Linkedin](https://img.shields.io/badge/LinkedIn-Swarup%20Bhise-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/swarup-bhise-a981932aa/)
 
-For a more personal touch, you can follow me on Instagram:
+- GitHub [![GitHub](https://img.shields.io/badge/GitHub-CoderSwarup-blue?style=flat&logo=github)](https://github.com/CoderSwarup)
 
-[![Instagram](https://img.shields.io/badge/Instagram-swarup_bhise999-pink?style=flat&logo=instagram)](https://www.instagram.com/swarup_bhise999/)
+- Instagram: [![Instagram](https://img.shields.io/badge/Instagram-swarup_bhise999-pink?style=flat&logo=instagram)](https://www.instagram.com/swarup_bhise999/)
 
 ## Contributing
 
