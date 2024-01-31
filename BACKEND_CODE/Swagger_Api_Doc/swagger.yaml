@@ -187,6 +187,220 @@ paths:
               example:
                 error: Invalid or expired refresh token
 
+  # update Password
+  /users/updatePassword:
+    put:
+      summary: Update user password
+      description: Update user password with new password and confirmation.
+      tags:
+        - Users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              example:
+                message: Password updated successfully
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: New password and confirm password do not match
+        '401':
+          description: Unauthorized, invalid old password
+          content:
+            application/json:
+              example:
+                error: Old password is wrong
+      operationId: updatePassword
+
+  # get Details Of Current Login User
+  /users/get-user-details:
+    get:
+      summary: Get details of the currently logged-in user
+      description: Retrieve details of the user currently authenticated through JWT.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: User details fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+      operationId: getCurrentUser
+
+  # Update User Details
+  /users/update-user:
+    post:
+      summary: Update user details
+      description: Update the details (username, email, fullName) of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                fullName:
+                  type: string
+      responses:
+        '200':
+          description: User details updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Not Found
+      operationId: updateUserDetails
+
+  # Update Avatar
+  /users/update/user-avatar:
+    post:
+      summary: Update user avatar
+      description: Update the avatar image of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Avatar image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' # Assuming your User schema
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Please Select Image
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Not Found
+        '422':
+          description: Unprocessable Entity, image uploadation error
+          content:
+            application/json:
+              example:
+                error: Images Uploadation Error
+      operationId: updateUserAvatar
+
+  # Update Cover Image
+  /users/update/user-coverimage:
+    post:
+      summary: Update user cover image
+      description: Update the cover image of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                coverimage:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Cover image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' # Assuming your User schema
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Please Select Image
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '402':
+          description: Images Deletion Error
+          content:
+            application/json:
+              example:
+                error: Images Deletion Error
+        '422':
+          description: Unprocessable Entity, images uploadation error
+          content:
+            application/json:
+              example:
+                error: Images Uploadation Error
+      operationId: updateUserCoverImage
+
 # Components
 components:
   schemas:

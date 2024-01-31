@@ -2,7 +2,10 @@ import UserModel from '../models/user.model.js';
 import { generateAccessAndRefreshToken } from '../utils/AccessAndRefreshTokenGenerator.js';
 import { ApiError } from '../utils/ApiErrors.js';
 import { ApiResponse } from '../utils/ApiResoponse.js';
-import { uploadFileOnCloudinary } from '../utils/CloudinaryServices.js';
+import {
+  DeleteImageFromCloudinary,
+  uploadFileOnCloudinary,
+} from '../utils/CloudinaryServices.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -54,8 +57,14 @@ export const RegisterUserController = asyncHandler(async (req, res) => {
 
   const NewUser = await UserModel.create({
     fullName,
-    avatar: avatarUrl.url,
-    coverImage: coverImageUrl?.url || null,
+    avatar: {
+      public_id: avatarUrl.public_id,
+      url: avatarUrl.url,
+    },
+    coverImage: {
+      public_id: coverImageUrl?.public_id || null,
+      url: coverImageUrl?.url || null,
+    },
     email,
     password,
     username: username.toLowerCase(),
@@ -211,3 +220,162 @@ export const GenerateNewRefreshTokenController = asyncHandler(
       );
   },
 );
+
+// Update Password Controller
+export const UpdatePasswordController = asyncHandler(async (req, res) => {
+  const { newPassword, confirmPassword, oldPassword } = req.body;
+  if (newPassword !== confirmPassword) {
+    throw new ApiError(400, 'New password and Confirm password does not match');
+  }
+  // get the user id
+  const UserID = req.user?._id;
+
+  if (!UserID) {
+    throw new ApiError(400, 'No User ID Found');
+  }
+
+  // Const Find User
+  const user = await UserModel.findById(UserID);
+  if (!user) {
+    throw new ApiError(404, 'User Not Found');
+  }
+
+  // check The Password Correct
+  // Check The Old Password Is Correct
+  const IsPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!IsPasswordCorrect) {
+    throw new ApiError(401, 'Old Password Is Wrong');
+  }
+
+  // set New Password
+  user.password = newPassword;
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'Password Is Updated Successfully'));
+});
+
+// get current User
+export const GetCurrentUser = asyncHandler(async (req, res) => {
+  let user = req.user;
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User Fetched Successfully '));
+});
+
+// update User Deatils Controller
+export const UpdateUserDetailsController = asyncHandler(async (req, res) => {
+  const { username, email, fullName } = req.body;
+
+  const userId = req.user?._id;
+
+  const user = await UserModel.findByIdAndUpdate(
+    userId,
+    {
+      username: username,
+      email: email,
+      fullName,
+    },
+    { new: true },
+  ).select('-password');
+
+  //
+  if (!user) {
+    return res.status(401).json('User Not Found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User Details Update Successfully'));
+});
+
+// Avatar Update Contoller
+export const UpdateAvatarController = asyncHandler(async (req, res) => {
+  const AvatarLocalPath = req.file?.path;
+  if (!AvatarLocalPath) {
+    return res.status(400).send('Please Select Image');
+  }
+
+  // const Findt The user
+  const userId = req.user?._id;
+
+  const User = await UserModel.findById(userId);
+
+  // upload New avatar Image
+  const newAvatarUrl = await uploadFileOnCloudinary(AvatarLocalPath);
+  if (!newAvatarUrl.url) {
+    throw new ApiError(401, 'Imges Uploadation Error');
+  }
+
+  // Delete the old Image from cloudinary
+  const ImageId = User.avatar.public_id;
+  if (!ImageId) {
+    throw new ApiError(400, 'No Public Id found for deletion');
+  }
+  const IsImageDeletd = await DeleteImageFromCloudinary(ImageId);
+
+  console.log(IsImageDeletd);
+  if (!IsImageDeletd) {
+    throw new ApiError(401, 'Imges Uploadation Error');
+  }
+
+  // set the new avatr url
+  User.avatar.public_id = newAvatarUrl.public_id;
+  User.avatar.url = newAvatarUrl.url;
+
+  // Save the user and get the updated document
+  const updatedUser = await User.save({ validateBeforeSave: false });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, 'Image Updated Successfully'));
+});
+
+// Cover Image Update Controller
+export const UpdateCoverImageController = asyncHandler(async (req, res) => {
+  const CoverImageLocalPath = req.file?.path;
+
+  if (!CoverImageLocalPath) {
+    return res.status(400).send('Please Select Image');
+  }
+
+  // Find the user
+  const userId = req.user?._id;
+
+  const User = await UserModel.findById(userId);
+
+  // Upload new cover image
+  const newCoverImageUrl = await uploadFileOnCloudinary(CoverImageLocalPath);
+
+  if (!newCoverImageUrl.url) {
+    throw new ApiError(401, 'Images Uploadation Error');
+  }
+
+  // Delete the old cover image from Cloudinary
+  const coverImageId = User.coverImage?.public_id;
+  if (coverImageId) {
+    const isCoverImageDeleted = await DeleteImageFromCloudinary(coverImageId);
+
+    if (!isCoverImageDeleted) {
+      throw new ApiError(402, 'Images Deletion Error');
+    }
+  }
+
+  // Set the new cover image URL
+  User.coverImage = {
+    public_id: newCoverImageUrl.public_id,
+    url: newCoverImageUrl.url,
+  };
+
+  // Save the user and get the updated document
+  const updatedUser = await User.save({ validateBeforeSave: false });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, 'Cover Image Updated Successfully'),
+    );
+});
