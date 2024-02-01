@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   GenerateNewRefreshTokenController,
   GetCurrentUser,
+  GetUserChannelProfile,
   LoginUserController,
   LogoutUserController,
   RegisterUserController,
@@ -45,5 +46,11 @@ UserRouter.route('/update/user-coverimage').post(
   verifyJWT,
   upload.single('coverimage'),
   UpdateCoverImageController,
+);
+
+// Get User Channel Profile
+UserRouter.route('/channelprofile/:username').get(
+  verifyJWT,
+  GetUserChannelProfile,
 );
 export default UserRouter;

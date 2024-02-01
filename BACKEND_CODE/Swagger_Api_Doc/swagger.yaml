@@ -401,6 +401,46 @@ paths:
                 error: Images Uploadation Error
       operationId: updateUserCoverImage
 
+  #get User Channel Details
+  /users/channelprofile/{username}:
+    get:
+      summary: Get user channel profile
+      description: Retrieve details of a user's channel profile.
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: The username of the user whose channel profile is to be retrieved.
+      responses:
+        '200':
+          description: User channel profile fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChannelProfile'
+        '400':
+          description: Bad request, check the request parameters
+          content:
+            application/json:
+              example:
+                error: Username parameter missing
+        '404':
+          description: Channel not found
+          content:
+            application/json:
+              example:
+                error: Channel is Not Present
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
 # Components
 components:
   schemas:
@@ -463,3 +503,32 @@ components:
       required:
         - accessToken
         - refreshToken
+
+    UserChannelProfile:
+      type: object
+      properties:
+        fullName:
+          type: string
+        username:
+          type: string
+        subscribersCount:
+          type: integer
+        channelSubscribedToCount:
+          type: integer
+        isSubscribed:
+          type: boolean
+        avatar:
+          type: string
+        coverImage:
+          type: string
+        email:
+          type: string
+      required:
+        - fullName
+        - username
+        - subscribersCount
+        - channelSubscribedToCount
+        - isSubscribed
+        - avatar
+        - coverImage
+        - email

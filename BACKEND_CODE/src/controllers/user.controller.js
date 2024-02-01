@@ -9,6 +9,7 @@ import {
 import { asyncHandler } from '../utils/asyncHandler.js';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 dotenv.config();
 
 export const RegisterUserController = asyncHandler(async (req, res) => {
@@ -378,4 +379,71 @@ export const UpdateCoverImageController = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, updatedUser, 'Cover Image Updated Successfully'),
     );
+});
+
+// Get User Channel Profile
+export const GetUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  if (!username) {
+    throw new ApiError(400, 'Username parameter missing');
+  }
+
+  // aggregation Pipeline
+  const channel = await UserModel.aggregate([
+    // stage 1
+    { $match: { username: username?.toLowerCase() } },
+
+    // stage 2
+    {
+      $lookup: {
+        from: 'subscriptions',
+        localField: '_id',
+        foreignField: 'channel',
+        as: 'subscribers',
+      },
+    },
+
+    // stage 3
+    {
+      $lookup: {
+        from: 'subscriptions',
+        localField: '_id',
+        foreignField: 'subscriber',
+        as: 'subscribedTo',
+      },
+    },
+    // stage 4
+    {
+      $addFields: {
+        subscribersCount: { $size: '$subscribers' },
+        channelSubscribedToCount: { $size: '$subscribedTo' },
+        isSubscribed: {
+          $in: [
+            new mongoose.Types.ObjectId(req.user?._id),
+            '$subscribers.subscriber',
+          ],
+        },
+      },
+    },
+    // stage 5
+    {
+      $project: {
+        fullName: 1,
+        username: 1,
+        subscribersCount: 1,
+        channelSubscribedToCount: 1,
+        isSubscribed: 1,
+        avatar: 1,
+        coverImage: 1,
+        email: 1,
+      },
+    },
+  ]);
+
+  if (!channel?.length) {
+    throw new ApiError(400, 'Channel is Not Present');
+  }
+
+  res.status(200).json(new ApiResponse(200, channel, 'User Channel Details '));
 });
