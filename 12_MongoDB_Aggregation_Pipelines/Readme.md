@@ -232,6 +232,100 @@ Projects specific fields for the response, including `fullName`, `username`, `su
 
 If no channel is found, it throws a 400 error. The result is then sent as a JSON response.
 
+# Sub Aggregation Pipelines
+
+## Overview
+
+ub Aggregation Pipelines provide a powerful and flexible way to enhance the aggregation capabilities within our system. This feature allows users to define a sequence of aggregation stages, creating a pipeline of operations that are executed sequentially on the aggregated data.
+
+## Usage
+
+To leverage Sub Aggregation Pipelines, users can nest aggregation stages within the `sub_aggregations` field. Each stage in the pipeline processes the output of the previous stage, enabling complex aggregations and transformations.
+
+## Example
+
+```json
+{
+  "aggregation": {
+    "field": "category",
+    "sub_aggregations": [
+      {
+        "stage": "group_by",
+        "field": "sub_category"
+      },
+      {
+        "stage": "average",
+        "field": "price",
+        "sub_aggregations": []
+      }
+    ]
+  }
+}
+```
+
+**Create an User WatchHistory Controller Using the Aggregation Pipeline**
+
+```js
+import moongoose from "mongoose";
+
+export const GetUserWatchHistory = asyncHandler(async (req, res) => {
+  const { userid } = req.user?._id;
+
+  // sub Aggregation PipeLine
+  const user = await UserModel.aggregate([
+    //stage 1
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userid),
+      },
+    },
+
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+
+        // new PipeLine
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+
+              // new PipeLine
+
+              pipeline: [
+                {
+                  $project: { fullName: 1, name: 1, avatar: 1 },
+                },
+              ],
+            },
+          },
+
+          {
+            $addFields: {
+              owner: {
+                $first: "$owner",
+              },
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
+  // send Response
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, user[0].watchHistory, "User Watch History"));
+});
+```
+
 ## Connect with Me
 
 Stay connected with me for more insights and updates on Production Level Backend Development:
