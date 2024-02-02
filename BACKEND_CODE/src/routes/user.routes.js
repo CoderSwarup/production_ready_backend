@@ -3,6 +3,7 @@ import {
   GenerateNewRefreshTokenController,
   GetCurrentUser,
   GetUserChannelProfile,
+  GetUserWatchHistory,
   LoginUserController,
   LogoutUserController,
   RegisterUserController,
@@ -53,4 +54,7 @@ UserRouter.route('/channelprofile/:username').get(
   verifyJWT,
   GetUserChannelProfile,
 );
+
+// get User WathcHistory
+UserRouter.route('/watchHistory').get(verifyJWT, GetUserWatchHistory);
 export default UserRouter;

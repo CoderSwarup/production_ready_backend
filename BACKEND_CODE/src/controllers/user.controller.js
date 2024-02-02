@@ -447,3 +447,61 @@ export const GetUserChannelProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, channel, 'User Channel Details '));
 });
+
+// Get The UserWatchHistory Contoller
+export const GetUserWatchHistory = asyncHandler(async (req, res) => {
+  const { userid } = req.user?._id;
+
+  // sub Aggregation PipeLine
+  const user = await UserModel.aggregate([
+    //stage 1
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userid),
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'videos',
+        localField: 'watchHistory',
+        foreignField: '_id',
+        as: 'watchHistory',
+
+        // new PipeLine
+        pipeline: [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'owner',
+              foreignField: '_id',
+              as: 'owner',
+
+              // new PipeLine
+
+              pipeline: [
+                {
+                  $project: { fullName: 1, name: 1, avatar: 1 },
+                },
+              ],
+            },
+          },
+
+          {
+            $addFields: {
+              owner: {
+                $first: '$owner',
+              },
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
+  // send Response
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, user[0].watchHistory, 'User Watch History'));
+});
