@@ -16,3 +16,14 @@ export const multiUpload = upload.fields([
   { name: 'avatar', maxCount: 1 },
   { name: 'coverimage', maxCount: 1 },
 ]);
+
+export const UploadVideosMulterMiddleware = upload.fields([
+  {
+    name: 'videoFile',
+    maxCount: 1,
+  },
+  {
+    name: 'thumbnail',
+    maxCount: 1,
+  },
+]);
