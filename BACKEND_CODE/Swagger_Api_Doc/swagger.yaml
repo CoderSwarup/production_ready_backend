@@ -1,0 +1,534 @@
+openapi: 3.0.3
+info:
+  title: VideoTube - The Production Ready Application
+  description: >-
+    # VideoTube API Documentation
+
+    Welcome to the API documentation for VideoTube, a production-ready application developed by CoderSwarup. This API serves as a key component in your journey to mastering backend development by guiding you through the creation of a YouTube-like video-sharing platform. Explore the rich features and gain hands-on experience in building a robust and scalable backend system.
+
+    ## Features
+
+    - **Production Ready:** VideoTube is meticulously designed to be production-ready, ensuring reliability, scalability, and efficiency in handling user registrations. Through this API, you'll learn best practices in building a resilient backend infrastructure.
+
+    ## 🎓 Learning Backend Development with VideoTube
+
+    Embark on a comprehensive learning experience in backend development as you delve into the creation of a YouTube application clone. The API documentation provides insights into the following key areas:
+
+    - **GitHub Repository:** Access the complete source code and project setup instructions on [GitHub](https://github.com/CoderSwarup). Follow the provided installation instructions to set up VideoTube on your local environment.
+
+    - **Special Thanks:** A special thanks to the creator of the main repository used for learning, [Hitesh Choudhary](https://github.com/hiteshchoudhary/chai-backend). The VideoTube project builds upon the foundation laid by the Chai Backend repository, contributing to an enriching learning experience.
+
+    - **Reporting Issues:** Experience real-world scenarios by testing the API. If you encounter any issues or bugs, contribute to the development process by creating an [issue](https://github.com/CoderSwarup/issues/new) on the GitHub repository. Assign it to a team member for collaborative problem-solving.
+
+    ## 🏁 Installation
+
+    To initiate your journey, follow the [installation instructions](https://github.com/CoderSwarup) provided on the GitHub repository. This step-by-step guide ensures a seamless setup of VideoTube on your local environment.
+
+    ## 🐞 Reporting Issues
+
+    As you progress in your learning journey, encountering challenges is natural. Report any issues or bugs you find during API testing by creating an [issue](https://github.com/CoderSwarup/issues/new). This collaborative approach fosters a vibrant learning environment and contributes to the continuous improvement of VideoTube.
+
+    ## Contact
+
+    For further inquiries or discussions about your learning journey, please reach out to the development team through the provided contact information.
+
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: 'http://localhost:3000/api/v1'
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      description: Register a new user with username, email, fullName, password, avatar, and cover image.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                fullName:
+                  type: string
+                password:
+                  type: string
+                avatar:
+                  type: string
+                  format: binary
+                coverimage:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: All fields are required
+        '422':
+          description: Unprocessable Entity, check the request payload
+          content:
+            application/json:
+              example:
+                error: Fields can't be empty
+        '409':
+          description: Conflict, email or username already in use
+          content:
+            application/json:
+              example:
+                error: Email or Username already in use
+
+  # Login Route
+  /users/login:
+    post:
+      summary: Log in a user
+      description: Log in a user with email, username, and password.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Username or Email is Required
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              example:
+                error: Invalid Credentials
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Is Not Register
+      security: []
+
+  # Logout User Route
+  /users/logout:
+    post:
+      summary: Logout a user
+      description: Clear user tokens and log them out.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+      requestBody:
+        required: false
+      operationId: logoutUser
+
+  # Refresh Token Route
+  /users/refresh-token:
+    post:
+      summary: Refresh user access token
+      description: Refresh user access token using a valid refresh token.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponse'
+        '401':
+          description: Unauthorized, invalid or expired refresh token
+          content:
+            application/json:
+              example:
+                error: Invalid or expired refresh token
+
+  # update Password
+  /users/updatePassword:
+    put:
+      summary: Update user password
+      description: Update user password with new password and confirmation.
+      tags:
+        - Users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              example:
+                message: Password updated successfully
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: New password and confirm password do not match
+        '401':
+          description: Unauthorized, invalid old password
+          content:
+            application/json:
+              example:
+                error: Old password is wrong
+      operationId: updatePassword
+
+  # get Details Of Current Login User
+  /users/get-user-details:
+    get:
+      summary: Get details of the currently logged-in user
+      description: Retrieve details of the user currently authenticated through JWT.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: User details fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+      operationId: getCurrentUser
+
+  # Update User Details
+  /users/update-user:
+    post:
+      summary: Update user details
+      description: Update the details (username, email, fullName) of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                fullName:
+                  type: string
+      responses:
+        '200':
+          description: User details updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Not Found
+      operationId: updateUserDetails
+
+  # Update Avatar
+  /users/update/user-avatar:
+    post:
+      summary: Update user avatar
+      description: Update the avatar image of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Avatar image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' # Assuming your User schema
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Please Select Image
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: User Not Found
+        '422':
+          description: Unprocessable Entity, image uploadation error
+          content:
+            application/json:
+              example:
+                error: Images Uploadation Error
+      operationId: updateUserAvatar
+
+  # Update Cover Image
+  /users/update/user-coverimage:
+    post:
+      summary: Update user cover image
+      description: Update the cover image of the currently logged-in user.
+      tags:
+        - Users
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                coverimage:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Cover image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' # Assuming your User schema
+        '400':
+          description: Bad request, check the request payload
+          content:
+            application/json:
+              example:
+                error: Please Select Image
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+        '402':
+          description: Images Deletion Error
+          content:
+            application/json:
+              example:
+                error: Images Deletion Error
+        '422':
+          description: Unprocessable Entity, images uploadation error
+          content:
+            application/json:
+              example:
+                error: Images Uploadation Error
+      operationId: updateUserCoverImage
+
+  #get User Channel Details
+  /users/channelprofile/{username}:
+    get:
+      summary: Get user channel profile
+      description: Retrieve details of a user's channel profile.
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: The username of the user whose channel profile is to be retrieved.
+      responses:
+        '200':
+          description: User channel profile fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChannelProfile'
+        '400':
+          description: Bad request, check the request parameters
+          content:
+            application/json:
+              example:
+                error: Username parameter missing
+        '404':
+          description: Channel not found
+          content:
+            application/json:
+              example:
+                error: Channel is Not Present
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+# Components
+components:
+  schemas:
+    #Main Models
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        avatar:
+          type: string
+        coverImage:
+          type: string
+        watchHistory:
+          type: array
+          items:
+            type: string # Assuming Video IDs are string
+        password:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - username
+        - email
+        - fullName
+        - avatar
+        - password
+
+    # Response Schema
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        AccessToken:
+          type: string
+        RefreshToken:
+          type: string
+
+    LogoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User Logout Successfully
+      required:
+        - message
+
+    TokenRefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+      required:
+        - accessToken
+        - refreshToken
+
+    UserChannelProfile:
+      type: object
+      properties:
+        fullName:
+          type: string
+        username:
+          type: string
+        subscribersCount:
+          type: integer
+        channelSubscribedToCount:
+          type: integer
+        isSubscribed:
+          type: boolean
+        avatar:
+          type: string
+        coverImage:
+          type: string
+        email:
+          type: string
+      required:
+        - fullName
+        - username
+        - subscribersCount
+        - channelSubscribedToCount
+        - isSubscribed
+        - avatar
+        - coverImage
+        - email
