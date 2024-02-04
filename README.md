@@ -14,11 +14,22 @@ Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tok
 
 ## 📝 Learning Steps
 
-1. [1_Backend_Roadmap](1_Backend_Roadmap)
-2. [2_Frotend_Backend_Connection](2_Frotend_Backend_Connection)
-3. [3_Data_Modelling](3_Data_Modelling)
-4. [4_Professional_Project_SetUp](4_Professional_Project_SetUp)
-5. [5_Connect_Databse](5_Connect_Databse)
+1.  [1_Backend_Roadmap](1_Backend_Roadmap)
+2.  [2_Frotend_Backend_Connection](2_Frotend_Backend_Connection)
+3.  [3_Data_Modelling](3_Data_Modelling)
+4.  [4_Professional_Project_SetUp](4_Professional_Project_SetUp)
+5.  [5_Connect_Databse](5_Connect_Databse)
+6.  [6_Api_Response_Error_Reaponse_Error_hanlder](6_Api_Response_Error_Reaponse_Error_hanlder)
+7.  [7_File_Uplodation](7_File_Uplodation)
+8.  [8_HTTP_Crach_Course](8_HTTP)
+9.  [9_Routes_Controllers](9_Routes_Controllers)
+10. [10_Tokens_MiddleWare_And_Cookies](10_Tokens_MiddleWare_And_Cookies)
+11. [11_Understanding_Subscrition_Model](11_Understanding_Subscrition_Model)
+12. [12_MongoDB_Aggregation_Pipelines](12_MongoDB_Aggregation_Pipelines)
+
+**Complete Backend Code**
+
+- [BACKEND_CODE](BACKEND_CODE)
 
 ### 📚 Learning Goals
 
