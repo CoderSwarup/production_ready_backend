@@ -130,8 +130,8 @@ export const LoginUserController = asyncHandler(async (req, res) => {
   // Send Response
   return res
     .status(200)
-    .cookie('accessToken', AccessToken, cookieOptions)
-    .cookie('refreshToken', RefreshToken, cookieOptions)
+    .cookie('accessToken', AccessToken)
+    .cookie('refreshToken', RefreshToken)
     .json(
       new ApiResponse(
         200,
