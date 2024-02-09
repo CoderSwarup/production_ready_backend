@@ -462,6 +462,207 @@ paths:
               example:
                 error: Unauthorized
 
+  # Toggle Video Like
+  /likes/toggle/v/{videoId}:
+    post:
+      summary: Toggle video like
+      description: Toggle like on a video.
+      tags:
+        - Likes
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to toggle like.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Like toggled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like toggled successfully
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+  # Toggle Comment Like
+  /likes/toggle/c/{commentId}:
+    post:
+      summary: Toggle comment like
+      description: Toggle like on a comment.
+      tags:
+        - Likes
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+          description: The ID of the comment to toggle like.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Like toggled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like toggled successfully
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+  # Toggle Tweet Like
+  /likes/toggle/t/{tweetId}:
+    post:
+      summary: Toggle like on a tweet
+      description: Toggle like on a tweet with the specified ID.
+      tags:
+        - Likes
+      parameters:
+        - in: path
+          name: tweetId
+          required: true
+          schema:
+            type: string
+          description: The ID of the tweet to toggle like.
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: Like toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+  # get User Liked Videos
+
+  /likes/videos:
+    get:
+      summary: Get liked videos
+      description: Retrieve a list of videos liked by the authenticated user.
+      tags:
+        - Likes
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: Liked videos fetched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Video'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+  # retrive the List of the Subscribers of the Channel
+  /subscriptions/c/{channelId}:
+    get:
+      summary: Get subscribers of a channel
+      description: Retrieve a list of subscribers of the specified channel.
+      tags:
+        - Subscriptions
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+            type: string
+          description: The ID of the channel to get subscribers.
+      responses:
+        '200':
+          description: Subscribers fetched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    # toggle Subscription
+    post:
+      summary: Toggle subscription to a channel
+      description: Toggle subscription to the specified channel.
+      tags:
+        - Subscriptions
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+            type: string
+          description: The ID of the channel to toggle subscription.
+      security:
+        - cookieAuth: [] # Assuming you have a security definition named 'cookieAuth'
+      responses:
+        '200':
+          description: Subscription toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: Unauthorized, user not authenticated
+          content:
+            application/json:
+              example:
+                error: Unauthorized
+
+  # Get the User Subscribed Channel
+  /subscriptions/u/{subscriberId}:
+    get:
+      summary: Get subscribed channels of a user
+      description: Retrieve a list of channels subscribed by the specified user.
+      tags:
+        - Subscriptions
+      parameters:
+        - in: path
+          name: subscriberId
+          required: true
+          schema:
+            type: string
+          description: The ID of the user to get subscribed channels.
+      responses:
+        '200':
+          description: Subscribed channels fetched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
 # Components
 components:
   schemas:
@@ -553,3 +754,20 @@ components:
         - avatar
         - coverImage
         - email
+
+    ApiResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        data:
+          type: object
+        message:
+          type: string
+        success:
+          type: boolean
+      required:
+        - statusCode
+        - data
+        - message
+        - success

@@ -3,11 +3,21 @@ import { ApiError } from '../utils/ApiErrors.js';
 import { ApiResponse } from '../utils/ApiResoponse.js';
 import { Like } from '../models/like.model.js';
 import mongoose from 'mongoose';
+import { Video } from '../models/video.model.js';
+import { Comment } from '../models/comment.model.js';
+import { Tweet } from '../models/tweet.model.js';
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: toggle like on video
   const userId = req.user?._id;
+
+  // Check Video is Exist Or Not
+  const isVideoExist = await Video.findById(videoId);
+
+  if (!isVideoExist) {
+    throw new ApiError(400, 'Invalid Video Cradintials');
+  }
 
   //  // Check if the user has already liked the video
   const existingLike = await Like.findOne({ video: videoId, likedBy: userId });
@@ -31,6 +41,13 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 const toggleCommentLike = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
   const userId = req.user?._id;
+
+  // check Comment is Exist or not
+  const isCommentExist = await Comment.findById(commentId);
+
+  if (!isCommentExist) {
+    throw new ApiError(400, 'Comment Is Not Present');
+  }
 
   // Check if the user has already liked the comment
   const existingLike = await Like.findOne({
@@ -57,6 +74,13 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 const toggleTweetLike = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
   const userId = req.user?._id;
+
+  // check is Tweet Is exist or not
+  const isTweetExist = await Tweet.findById(tweetId);
+
+  if (!isTweetExist) {
+    throw new ApiError(400, 'Tweet is Not Present');
+  }
 
   // Check if the user has already liked the tweet
   const existingLike = await Like.findOne({

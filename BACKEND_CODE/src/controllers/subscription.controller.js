@@ -102,7 +102,9 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     },
   ]);
 
-  console.log(Channels);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, Channels, "User's Subscribed channels"));
 });
 
 export { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels };
