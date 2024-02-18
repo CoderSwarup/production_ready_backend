@@ -8,9 +8,9 @@ import {
 
 const router = Router();
 
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+// router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route('/stats').get(getChannelStats);
-router.route('/videos').get(getChannelVideos);
+router.route('/stats/:channelid').get(getChannelStats);
+router.route('/videos/:channelid').get(getChannelVideos);
 
 export default router;

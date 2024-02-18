@@ -668,6 +668,8 @@ paths:
     get:
       summary: Get comments for a video
       description: Retrieve comments for a specific video.
+      tags:
+        - Comment
       parameters:
         - in: path
           name: videoId
@@ -701,6 +703,8 @@ paths:
     post:
       summary: Add a comment to a video
       description: Add a new comment to the specified video.
+      tags:
+        - Comment
       parameters:
         - in: path
           name: videoId
@@ -737,10 +741,13 @@ paths:
               example:
                 error: Video not found
 
+  # delete and Update Comment
   /comments/c/{commentId}:
     delete:
       summary: Delete a comment
       description: Delete a comment by its ID.
+      tags:
+        - Comment
       parameters:
         - in: path
           name: commentId
@@ -769,6 +776,8 @@ paths:
     patch:
       summary: Update a comment
       description: Update the content of a comment.
+      tags:
+        - Comment
       parameters:
         - in: path
           name: commentId
@@ -802,6 +811,82 @@ paths:
             application/json:
               example:
                 error: You don't have access to update this comment
+
+  # get channelstats
+  /dashboard/stats/{channelid}:
+    get:
+      summary: Get channel statistics
+      description: Retrieve statistics for a specific channel including total video views, total subscribers, total videos, and total likes.
+      tags:
+        - dashboard
+      parameters:
+        - in: path
+          name: channelid
+          required: true
+          schema:
+            type: string
+          description: The ID of the channel to retrieve statistics for.
+      responses:
+        '200':
+          description: Channel statistics fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelStats'
+        '401':
+          description: Not accessible
+          content:
+            application/json:
+              example:
+                error: Not Accessible
+
+  # get Channel Videos
+  /dashboard/videos/{channelid}:
+    get:
+      summary: Get channel videos
+      description: Retrieve videos uploaded by the specified channel.
+      tags:
+        - dashboard
+      parameters:
+        - in: path
+          name: channelid
+          required: true
+          schema:
+            type: string
+          description: The ID of the channel to retrieve videos for.
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of videos per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+          description: Field to sort by (e.g., createdAt, views)
+        - in: query
+          name: sortType
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sorting order (asc for ascending, desc for descending)
+      responses:
+        '200':
+          description: Channel videos fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelVideos'
 
 # Components
 components:
@@ -943,3 +1028,103 @@ components:
         - content
         - createdAt
         - owner
+
+    ChannelStats:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The ID of the channel.
+        totalviews:
+          type: integer
+          description: Total views of all videos belonging to the channel.
+        totalVideo:
+          type: integer
+          description: Total number of videos uploaded by the channel.
+        totalLikes:
+          type: integer
+          description: Total number of likes received on all videos belonging to the channel.
+        totalSubscriber:
+          type: integer
+          description: Total number of subscribers to the channel.
+        channeldetail:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: The ID of the channel owner.
+            username:
+              type: string
+              description: Username of the channel owner.
+            email:
+              type: string
+              format: email
+              description: Email of the channel owner.
+            fullName:
+              type: string
+              description: Full name of the channel owner.
+            avatar:
+              type: object
+              properties:
+                public_id:
+                  type: string
+                  description: The public ID of the avatar image.
+                url:
+                  type: string
+                  format: uri
+                  description: URL of the avatar image.
+              description: Avatar details of the channel owner.
+            coverImage:
+              type: object
+              properties:
+                public_id:
+                  type: string
+                  description: The public ID of the cover image.
+                url:
+                  type: string
+                  format: uri
+                  description: URL of the cover image.
+              description: Cover image details of the channel owner.
+            createdAt:
+              type: string
+              format: date-time
+              description: The date and time when the channel was created.
+            updatedAt:
+              type: string
+              format: date-time
+              description: The date and time when the channel was last updated.
+          description: Details of the channel owner.
+      required:
+        - _id
+        - totalviews
+        - totalVideo
+        - totalLikes
+        - totalSubscriber
+        - channeldetail
+
+    ChannelVideos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Video'
+
+    Video:
+      type: object
+      properties:
+        videoFile:
+          type: string
+          description: URL or path to the video file
+        thumbnail:
+          type: string
+          description: URL or path to the video thumbnail image
+        title:
+          type: string
+          description: Title of the video
+        description:
+          type: string
+          description: Description of the video
+        views:
+          type: integer
+          description: Number of views the video has received
+        duration:
+          type: string
+          description: Duration of the video
