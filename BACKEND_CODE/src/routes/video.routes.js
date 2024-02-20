@@ -14,16 +14,16 @@ import {
 } from '../middlewares/multer.middleware.js';
 
 const router = Router();
+
+router.route('/').get(getAllVideos);
+router.route('/:videoId').get(getVideoById);
+
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router
-  .route('/')
-  .get(getAllVideos)
-  .post(UploadVideosMulterMiddleware, publishAVideo);
+router.route('/').post(UploadVideosMulterMiddleware, publishAVideo);
 
 router
   .route('/:videoId')
-  .get(getVideoById)
   .delete(deleteVideo)
   .patch(upload.single('thumbnail'), updateVideo);
 

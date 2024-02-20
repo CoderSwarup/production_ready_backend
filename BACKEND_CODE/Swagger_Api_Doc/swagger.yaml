@@ -888,6 +888,209 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChannelVideos'
 
+  #videos  GET ALL Videos And Publish New Video
+  /videos:
+    get:
+      summary: Get all videos
+      description: Retrieve a list of videos based on query, pagination, and sorting.
+      tags:
+        - videos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of videos per page
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Search query to filter videos by title, description, or slug
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+          description: Field to sort by (e.g., createdAt, views)
+        - in: query
+          name: sortType
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sorting order (asc for ascending, desc for descending)
+      responses:
+        '200':
+          description: List of videos fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoList'
+    post:
+      summary: Publish a video
+      description: Publish a new video.
+      tags:
+        - videos
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                videoFile:
+                  type: string
+                  format: binary
+                thumbnail:
+                  type: string
+                  format: binary
+
+      responses:
+        '200':
+          description: Video published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  # get , Delete and Update video based on the id
+  /videos/{videoId}:
+    get:
+      summary: Get video by ID
+      description: Retrieve a video by its ID.
+      tags:
+        - videos
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to retrieve
+      responses:
+        '200':
+          description: Video fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    delete:
+      summary: Delete video
+      description: Delete a video by its ID.
+      tags:
+        - videos
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to delete
+      responses:
+        '200':
+          description: Video deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    patch:
+      summary: Update video
+      description: Update details of a video.
+      tags:
+        - videos
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to update
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                thumbnail:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Video updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  # Toggle Video Publish
+  /videos/toggle/publish/{videoId}:
+    patch:
+      summary: Toggle publish status
+      description: Toggle the publish status of a video.
+      tags:
+        - videos
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to toggle publish status for
+      responses:
+        '200':
+          description: Publish status toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
 # Components
 components:
   schemas:
@@ -1128,3 +1331,19 @@ components:
         duration:
           type: string
           description: Duration of the video
+
+    ApiError:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - statusCode
+        - message
