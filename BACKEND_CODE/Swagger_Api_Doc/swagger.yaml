@@ -1090,6 +1090,226 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+  #Create a Playlist
+  /playlist:
+    post:
+      summary: Create a playlist
+      description: Create a new playlist.
+      tags:
+        - playlists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Playlist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  #Get User All Playlist
+  /playlist/user/{userId}:
+    get:
+      summary: Get user playlists
+      description: Retrieve playlists created by the user.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: The ID of the user
+      responses:
+        '200':
+          description: List of playlists fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  #Get Playlist Based On Their ID
+  /playlist/{playlistId}:
+    get:
+      summary: Get playlist by ID
+      description: Retrieve a playlist by its ID.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: playlistId
+          required: true
+          schema:
+            type: string
+          description: The ID of the playlist to retrieve
+      responses:
+        '200':
+          description: Playlist fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    #update Playlist
+    patch:
+      summary: Update playlist
+      description: Update details of a playlist.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: playlistId
+          required: true
+          schema:
+            type: string
+          description: The ID of the playlist to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Playlist updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    # Delete Playlist
+    delete:
+      summary: Delete playlist
+      description: Delete a playlist by its ID.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: playlistId
+          required: true
+          schema:
+            type: string
+          description: The ID of the playlist to delete
+      responses:
+        '200':
+          description: Playlist deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  #Add Video Into Playlist
+  /playlist/add/{videoId}/{playlistId}:
+    patch:
+      summary: Add video to playlist
+      description: Add a video to a playlist.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to add
+        - in: path
+          name: playlistId
+          required: true
+          schema:
+            type: string
+          description: The ID of the playlist
+      responses:
+        '200':
+          description: Video added to playlist successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  #Remove Video From The Playlist
+  /playlist/remove/{videoId}/{playlistId}:
+    patch:
+      summary: Remove video from playlist
+      description: Remove a video from a playlist.
+      tags:
+        - playlists
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+          description: The ID of the video to remove
+        - in: path
+          name: playlistId
+          required: true
+          schema:
+            type: string
+          description: The ID of the playlist
+      responses:
+        '200':
+          description: Video removed from playlist successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
 # Components
 components:
